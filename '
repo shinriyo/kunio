@@ -1,0 +1,13 @@
+enchant();
+
+window.onload = function() {
+    var game = new Game(320, 320);
+    game.fps = 24;
+    game.preload('chara1.gif');
+
+    game.onload = function() {
+
+    };
+
+    game.start():
+}
