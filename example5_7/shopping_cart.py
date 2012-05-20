@@ -45,6 +45,11 @@ class DetailHandler(tornado.web.RequestHandler):
         self.render("index.html", session=session, count=count)
         #self.write_message('{"inventoryCount":"%d", "sessionId":%d}' % count, session) #shinriyo added
 
+class EchoHandler(tornado.websocket.WebSocketHandler):
+    def on_open(self):
+        self.write_message('connected!')
+    def on_message(self, message):
+        self.write_message(message)
 
 class CartHandler(tornado.web.RequestHandler):
     def post(self):
@@ -88,6 +93,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r'/', DetailHandler),
+            (r'/hoge', EchoHandler),
             #(r'/start', DetailHandler),
             (r'/cart', CartHandler),
             (r'/cart/status', StatusHandler)
