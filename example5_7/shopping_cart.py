@@ -36,14 +36,14 @@ class ShoppingCart(object):
     def getInventoryCount(self):
         return self.totalInventory - len(self.carts)
 
-# '/'
+
 class DetailHandler(tornado.web.RequestHandler):
-    sessionId = ''
     def get(self):
+    #def post(self):
         session = uuid4()
-        sessinId = sessionId # shinriyo
         count = self.application.shoppingCart.getInventoryCount()
-#        self.render("index.html", session=session, count=count)
+        self.render("index.html", session=session, count=count)
+        #self.write_message('{"inventoryCount":"%d", "sessionId":%d}' % count, session) #shinriyo added
 
 
 class CartHandler(tornado.web.RequestHandler):
@@ -62,8 +62,13 @@ class CartHandler(tornado.web.RequestHandler):
         else:
             self.set_status(400)
 
-
+# cart/status
 class StatusHandler(tornado.websocket.WebSocketHandler):
+
+    # ????
+    def on_open(self):
+        self.write_message('connected!')
+
     def open(self):
         self.application.shoppingCart.register(self.callback)
 
@@ -83,6 +88,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r'/', DetailHandler),
+            #(r'/start', DetailHandler),
             (r'/cart', CartHandler),
             (r'/cart/status', StatusHandler)
         ]

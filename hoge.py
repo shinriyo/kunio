@@ -28,10 +28,12 @@ class TTLSSocketHandler(tornado.websocket.WebSocketHandler):
         for key in socketConnections.keys():
             if key != session_id:
                 try:
-                    socketConnections[key].write_message(json.dumps({"session_id": session_id}))
-                except IOError:
+                    socketConnections[key].write_message(json.dumps({"session_id":
+                    session_id}))
+                except
+                    IOError:
                     socketConnections.pop(key)
-        self.write_message(json.dumps({'my_session_id': session_id}))
+                    self.write_message(json.dumps({'my_session_id': session_id}))
 
     def on_message(self, message):
         print('on_message: ' + self.sessionId)
@@ -55,7 +57,8 @@ class TTLSSocketHandler(tornado.websocket.WebSocketHandler):
 
     @staticmethod
     def _create_session():
-        session_id = sha1(str(datetime.datetime.now()) + str(random.randint(1, 10000))).hexdigest()
+        session_id = sha1(str(datetime.datetime.now()) +
+        str(random.randint(1, 10000))).hexdigest()
         while session_id in socketConnections:
             session_id = sha1(str(datetime.datetime.now()) + str(random(1, 10000)))
         return session_id
@@ -63,14 +66,17 @@ class TTLSSocketHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         print('on_close: ' + self.sessionId)
         for con in socketConnections.values():
-            if con != self:
-                try:
-                    con.write_message(json.dumps({
-                        'func': 'remove',
-                        'session_id': self.sessionId
-                    }))
-                except IOError:
-                    socketConnections.pop(con.sessionId)
+        if con != self:
+        try:
+            con.write_message(json.dumps({
+        'func':
+        'remove',
+        'session_id':
+        self.sessionId
+        }))
+        except
+            IOError:
+        socketConnections.pop(con.sessionId)
         if self in socketConnections:
             socketConnections.pop(self.sessionId)
 
@@ -80,9 +86,9 @@ class MainHandler(tornado.web.RequestHandler):
         self.render("index.html")
 
 application = tornado.web.Application([
-    (r"/ttls", TTLSSocketHandler),
-    (r"/index.html", MainHandler)
-], debug=True)
+        (r"/ttls", TTLSSocketHandler),
+            (r"/index.html", MainHandler)
+        ], debug=True)
 
 if __name__ == "__main__":
     options.parse_command_line()

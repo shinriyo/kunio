@@ -1,5 +1,23 @@
-enchant();
+// websocket
+$(document).ready(function() {
+    setTimeout(requestInventory, 100);
+//    document.session = $('#session').val();
+});
 
+var player_count;
+var requestInventory = function() {
+   var host = 'ws://localhost:8000/cart/status';
+   var websocket = new WebSocket(host);
+
+   websocket.onopen = function (evt) { };
+   websocket.onmessage = function (evt) {
+       //$('#count').html($.parseJSON(evt.data)['inventoryCount']);
+       player_count = $.parseJSON(evt.data)['inventoryCount'];
+   };
+   websocket.onerror = function (evt) { };
+}
+
+enchant();
 window.onload = function() {
     var game = new Game(320, 320);
     game.fps = 24;
@@ -34,7 +52,6 @@ window.onload = function() {
         bear.image = game.assets['chara1.png'];
         //Math.floor(Math.random() * 300) + 10;
         bear.status = 'idle';
-        bear.n = 0;
         bear.x = 80;
         bear.y = 130;
         bear.vy = 0;
@@ -43,7 +60,7 @@ window.onload = function() {
         bear.speed = 5;
 
         var bear2 = new Sprite(32, 32);
-        bear2.n = 0;
+        bear2.status = 'idle';
         bear2.current_y = 0;
         bear2.frame = 5;
         bear2.x = 60;
@@ -52,7 +69,6 @@ window.onload = function() {
         bear2.image = game.assets['chara1.png'];
 
         var bear3 = new Sprite(32, 32);
-        bear3.n = 0;
         bear3.current_y = 0;
         bear3.frame = 10;
         bear3.scaleX = -1;
@@ -62,7 +78,6 @@ window.onload = function() {
         bear3.image = game.assets['chara1.png'];
 
         var bear4 = new Sprite(32, 32);
-        bear4.n = 0;
         bear4.current_y = 0;
         bear4.frame = 15;
         bear4.scaleX = -1;
@@ -71,7 +86,6 @@ window.onload = function() {
         bear4.hp = 100;
         bear4.image = game.assets['chara1.png'];
 
-        var chara_speed = {'bear':5};
         var time_label = new Label('Time 0');
         time_label.x = 5;
         time_label.y = 3;
@@ -171,8 +185,23 @@ window.onload = function() {
                 // punch
                 if (game.input.b) {
                     this.status = 'attack';
+
+                    jQuery.ajax({
+                        url: '//localhost:8000/cart', type: 'POST',
+                        data: {
+                            session: document.session,
+                            action: 'add'
+                        },
+                        dataType: 'json',
+                        beforeSend: function(xhr, settings) {
+                        //$(event.target).attr('disabled', 'disabled');
+                        },
+                        success: function(data, status, xhr) {
+                        }
+                    });
                 }
-            } else {
+            } else { // jump
+       label.text = player_count;
                 // punch
                 if (game.input.b) {
                     this.status = 'jump_attack';
@@ -247,9 +276,8 @@ window.onload = function() {
         });
 
     player_select_scene.addChild(bear);
-    game.pushScene(player_select_scene);
+//    game.pushScene(player_select_scene);
 /*        var gameover_scene = new Scene();
-        gameover_scene.backgroundColor = 'black';
 */
 
         game.rootScene.addChild(stage);

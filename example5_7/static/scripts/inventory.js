@@ -1,4 +1,4 @@
-var session_value = 1;
+//var session_value = 1;
 $(document).ready(function() {
 //    document.session = 0;
     document.session = $('#session').val();
