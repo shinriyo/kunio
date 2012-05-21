@@ -22,7 +22,6 @@ window.onload = function() {
     var ws = new WebSocket("ws://localhost:8888/socket");
     // setting
     ws.onmessage = function(event) {
-        //$('body').append('<div>' + event.data + '</div>');
         label.text = event.data;
     }
  
