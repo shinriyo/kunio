@@ -24,9 +24,10 @@ class ClientSocket(websocket.WebSocketHandler):
 
 class Announcer(tornado.web.RequestHandler):
     def get(self, *args, **kwargs):
-        data = self.get_argument('data')
+        x = self.get_argument('x')
+        y = self.get_argument('y')
         for socket in GLOBALS['sockets']:
-            socket.write_message(data)
+            socket.write_message('x:' + x + ', y:' + y)
         self.write('Posted')
 
 application = tornado.web.Application([

@@ -5,22 +5,24 @@
         <title>enchant</title>
         <script type="text/javascript" src="example5_7/static/scripts/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="mini.js"></script>
-	<script type="text/javascript">
-$(document).ready(function() {
-        $('#add-button').click(function(event) {
-            jQuery.ajax({
-                url: 'http://localhost:8888/push', type: 'GET',
-                data: {
-                    data: 'xkiaojdoiawa'
-                },
-                dataType: 'json',
-                beforeSend: function(xhr, settings) {
-                },
-                success: function(data, status, xhr) {
-                }
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('#add-button').click(function(event) {
+                jQuery.ajax({
+                    url: 'http://localhost:8888/push', type: 'GET',
+                    data: {
+                        x: '-1',
+                        y: '-1',
+                        data: 'x'
+                    },
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                    },
+                    success: function(data, status, xhr) {
+                    }
+                });
             });
         });
-});
         </script>
     </head>
     <body>
