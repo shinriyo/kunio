@@ -22,7 +22,7 @@ window.onload = function() {
     var ws = new WebSocket("ws://localhost:8888/socket");
     // setting
     ws.onmessage = function(event) {
-        label.text = event.data;
+       // label.text = event.data;
     }
  
     game.onload = function() {
@@ -42,10 +42,10 @@ window.onload = function() {
         stage.WALL_DY = 125;
 
         var bear = new Sprite(32, 32);
+        bear.name = 'hoge';
+        bear.n = 0; // frame
         bear.current_y = 0;
         bear.frame = 0;
-        bear.image = game.assets['chara1.png'];
-        //Math.floor(Math.random() * 300) + 10;
         bear.status = 'idle';
         bear.x = 80;
         bear.y = 130;
@@ -53,26 +53,38 @@ window.onload = function() {
         bear.hp = 100;
         bear.jumping = false;
         bear.speed = 5;
+        bear.image = game.assets['chara1.png'];
+        //Math.floor(Math.random() * 300) + 10;
 
         var bear2 = new Sprite(32, 32);
-        bear2.status = 'idle';
+        bear2.n = 0;
         bear2.current_y = 0;
         bear2.frame = 5;
+        bear2.status = 'idle';
         bear2.x = 60;
         bear2.y = 100;
+        bear2.vy = 100;
         bear2.hp = 100;
+        bear2.jumping = false;
+        bear2.speed = 5;
         bear2.image = game.assets['chara1.png'];
 
         var bear3 = new Sprite(32, 32);
+        bear3.n = 0;
         bear3.current_y = 0;
         bear3.frame = 10;
+        bear3.status = 'idle';
         bear3.scaleX = -1;
         bear3.x = 230;
         bear3.y = 100;
+        bear3.vy = 100;
         bear3.hp = 100;
+        bear3.jumping = false;
+        bear3.speed = 5;
         bear3.image = game.assets['chara1.png'];
 
         var bear4 = new Sprite(32, 32);
+        bear4.n = 0;
         bear4.current_y = 0;
         bear4.frame = 15;
         bear4.scaleX = -1;
@@ -80,6 +92,7 @@ window.onload = function() {
         bear4.y = 130;
         bear4.hp = 100;
         bear4.image = game.assets['chara1.png'];
+
 
         var time_label = new Label('Time 0');
         time_label.x = 5;
@@ -121,7 +134,7 @@ window.onload = function() {
         player2_label.y = 220;
         player2_label.color = 'white';
         
-        var player3_label = new Label("huga");
+        var player3_label = new Label("fuga");
         player3_label.x = 195;
         player3_label.y = 220;
         player3_label.color = 'white';
@@ -131,7 +144,26 @@ window.onload = function() {
         player4_label.y = 220;
         player4_label.color = 'white';
 
-        bear.addEventListener('enterframe', function() {
+        // CPU ----
+        //
+        //
+        //
+var cpu_player2 = bear2;
+     cpu_player2.addEventListener('enterframe', function() {
+         ws.onmessage = function(event) {
+             bear2.x = event.data;
+             //label.text = event.data;
+         }
+     });
+
+var cpu_player3 = bear3;
+        cpu_player3.addEventListener('enterframe', function() {
+        });
+
+        // PLAYER
+var my_player = bear;
+
+        my_player.addEventListener('enterframe', function() {
 
             // and ground line also
             if (this.within(bear2, 5)) {
@@ -175,18 +207,6 @@ window.onload = function() {
                 if (game.input.b) {
                     this.status = 'attack';
 
-                    jQuery.ajax({
-                        url: 'http://localhost:8888/push', type: 'GET',
-                        data: {
-                            x: '1',
-                            y: '3',
-                        },
-                        dataType: 'json',
-                        beforeSend: function(xhr, settings) {
-                        },
-                        success: function(data, status, xhr) {
-                        }
-                    });
                 }
             } else { // jump
 
@@ -199,7 +219,7 @@ window.onload = function() {
             this.vy += 0.9;
             if (this.jumping) this.y += this.vy;
             //score_label.text = 'Score: ' + score;
-            if (this.jumping && bear.y >= this.current_y) {
+            if (this.jumping && this.y >= this.current_y) {
                 this.y = this.current_y;
                 this.jumping = false;
             }
@@ -213,7 +233,29 @@ window.onload = function() {
                 this.frame = 0;
             }
 
+            jQuery.ajax({
+                url: 'http://localhost:8888/push', type: 'GET',
+                data: {
+                    x: this.x,
+                    y: this.y,
+                    hp: this.hp,
+                    status: this.status,
+                    player: '1', // 1 ~ 4
+                },
+                dataType: 'json',
+                beforeSend: function(xhr, settings) {
+                },
+                success: function(data, status, xhr) {
+                }
+            });
         });
+
+        var createLife = function (life) {
+            var bars = "";
+            for (var i=0;i<10;i+=1) {
+                bars += "|";
+            }
+        }
 
         var readdChild = function (object) {
             game.rootScene.removeChild(object);

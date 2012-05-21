@@ -27,7 +27,9 @@ class Announcer(tornado.web.RequestHandler):
         x = self.get_argument('x')
         y = self.get_argument('y')
         for socket in GLOBALS['sockets']:
-            socket.write_message('x:' + x + ', y:' + y)
+#            socket.write_message('x:' + x + ', y:' + y)
+            socket.write_message(str(x))
+#            socket.write_message('{"x":"%d", "y":"%d"}' % int(x), int(y))
         self.write('Posted')
 
 application = tornado.web.Application([
