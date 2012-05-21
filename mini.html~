@@ -15,6 +15,7 @@ $(document).ready(function() {
                 },
                 dataType: 'json',
                 beforeSend: function(xhr, settings) {
+                    $(event.target).attr('disabled', 'disabled');
                 },
                 success: function(data, status, xhr) {
                 }

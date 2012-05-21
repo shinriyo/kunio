@@ -15,8 +15,8 @@ class ClientSocket(websocket.WebSocketHandler):
         GLOBALS['sockets'].append(self)
         print "Websocket opened"
 
-#    def on_message(self, ):
-#        self.write_message("You said: " + message)
+    def on_message(self, ):
+        self.write_message("You said: " + message)
 
     def on_close(self):
         print "Websocket closed"
