@@ -1,23 +1,5 @@
-// websocket
-$(document).ready(function() {
-    setTimeout(requestInventory, 100);
-//    document.session = $('#session').val();
-});
-
-var player_count;
-var requestInventory = function() {
-   var host = 'ws://localhost:8000/cart/status';
-   var websocket = new WebSocket(host);
-
-   websocket.onopen = function (evt) { };
-   websocket.onmessage = function (evt) {
-       //$('#count').html($.parseJSON(evt.data)['inventoryCount']);
-       player_count = $.parseJSON(evt.data)['inventoryCount'];
-   };
-   websocket.onerror = function (evt) { };
-}
-
 enchant();
+
 window.onload = function() {
     var game = new Game(320, 320);
     game.fps = 24;
@@ -30,6 +12,20 @@ window.onload = function() {
     var player_select_scene = new Scene();
     player_select_scene.backgroundColor = 'black';
 
+    var label = new Label('message');
+    label.x = 105;
+    label.y = 0;
+    label.color = 'red';
+    label.font = "bold 24px 'Impact'";
+
+    // websocket
+    var ws = new WebSocket("ws://localhost:8888/socket");
+    // setting
+    ws.onmessage = function(event) {
+        //$('body').append('<div>' + event.data + '</div>');
+        label.text = event.data;
+    }
+ 
     game.onload = function() {
         game.keybind(90, 'a'); //z
         game.keybind(88, 'b'); //x
@@ -91,12 +87,6 @@ window.onload = function() {
         time_label.y = 3;
         time_label.color = 'white';
         time_label.font = "bold 20px 'Impact'";
-
-        var label = new Label('message');
-        label.x = 105;
-        label.y = 0;
-        label.color = 'red';
-        label.font = "bold 24px 'Impact'";
 
         var life1_label = new Label('|||||||');
         life1_label.x = 7;
@@ -187,21 +177,20 @@ window.onload = function() {
                     this.status = 'attack';
 
                     jQuery.ajax({
-                        url: '//localhost:8000/cart', type: 'POST',
+                        url: 'http://localhost:8888/push', type: 'GET',
                         data: {
-                            session: document.session,
-                            action: 'add'
+                            x: '1',
+                            y: '3',
                         },
                         dataType: 'json',
                         beforeSend: function(xhr, settings) {
-                        //$(event.target).attr('disabled', 'disabled');
                         },
                         success: function(data, status, xhr) {
                         }
                     });
                 }
             } else { // jump
-       label.text = player_count;
+
                 // punch
                 if (game.input.b) {
                     this.status = 'jump_attack';
