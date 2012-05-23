@@ -20,11 +20,15 @@ window.onload = function() {
 
     // websocket
     var ws = new WebSocket("ws://localhost:8888/socket");
-    // setting
-    ws.onmessage = function(event) {
-       // label.text = event.data;
-    }
  
+    var createLife = function (life) {
+        var bars = "";
+        for (var i=0;i<life/10;i+=1) {
+            bars += "|";
+        }
+        return bars;
+    }
+
     game.onload = function() {
         game.keybind(90, 'a'); //z
         game.keybind(88, 'b'); //x
@@ -88,11 +92,11 @@ window.onload = function() {
         bear4.current_y = 0;
         bear4.frame = 15;
         bear4.scaleX = -1;
+        bear4.status = 'idle';
         bear4.x = 200;
         bear4.y = 130;
         bear4.hp = 100;
         bear4.image = game.assets['chara1.png'];
-
 
         var time_label = new Label('Time 0');
         time_label.x = 5;
@@ -100,22 +104,25 @@ window.onload = function() {
         time_label.color = 'white';
         time_label.font = "bold 20px 'Impact'";
 
-        var life1_label = new Label('|||||||');
+//        var life1_label = new Label('|||||||');
+        var life1_label = new Label(createLife(bear.hp));
         life1_label.x = 7;
         life1_label.y = 235;
         life1_label.color = 'white';
 
-        var life2_label = new Label('|||||||');
+//        var life2_label = new Label('|||||||');
+        var life2_label = new Label(createLife(bear2.hp))
         life2_label.x = 100;
         life2_label.y = 235;
         life2_label.color = 'white';
 
-        var life3_label = new Label('|||||||');
+        var life3_label = new Label(createLife(bear3.hp))
         life3_label.x = 195;
         life3_label.y = 235;
         life3_label.color = 'white';
 
-        var life4_label = new Label('|||||||');
+        //var life4_label = new Label('|||||||');
+        var life4_label = new Label(createLife(bear4.hp))
         life4_label.x = 285;
         life4_label.y = 235;
         life4_label.color = 'white';
@@ -144,30 +151,51 @@ window.onload = function() {
         player4_label.y = 220;
         player4_label.color = 'white';
 
-        // CPU ----
-        //
-        //
-        //
-var cpu_player2 = bear2;
-     cpu_player2.addEventListener('enterframe', function() {
-         ws.onmessage = function(event) {
-             bear2.x = event.data;
-             //label.text = event.data;
-         }
-     });
+        // player logged in
+        ws.onmessage = function(event) {
+            label.text = 'HIT';
+        }
 
-var cpu_player3 = bear3;
+        // CPU ----
+        var cpu_player2 = bear2;
+        cpu_player2.addEventListener('enterframe', function() {
+            ws.onmessage = function(event) {
+                cpu_player2.scaleX = $.parseJSON(event.data)['bear2']['scaleX'];
+                cpu_player2.status = $.parseJSON(event.data)['bear2']['status'];
+                cpu_player2.x = $.parseJSON(event.data)['bear2']['x'];
+                cpu_player2.y = $.parseJSON(event.data)['bear2']['y'];
+            }
+        });
+
+        var cpu_player3 = bear3;
         cpu_player3.addEventListener('enterframe', function() {
+            ws.onmessage = function(event) {
+                cpu_player3.scaleX = $.parseJSON(event.data)['bear3']['scaleX'];
+                cpu_player3.status = $.parseJSON(event.data)['bear3']['status'];
+                cpu_player3.x = $.parseJSON(event.data)['bear3']['x'];
+                cpu_player3.y = $.parseJSON(event.data)['bear3']['y'];
+            }
+        });
+
+        var cpu_player4 = bear4;
+        cpu_player4.addEventListener('enterframe', function() {
+            ws.onmessage = function(event) {
+                cpu_player4.scaleX = $.parseJSON(event.data)['bear4']['scaleX'];
+                cpu_player4.status = $.parseJSON(event.data)['bear4']['status'];
+                cpu_player4.x = $.parseJSON(event.data)['bear4']['x'];
+                cpu_player4.y = $.parseJSON(event.data)['bear4']['y'];
+            }
         });
 
         // PLAYER
-var my_player = bear;
+        var my_player = bear;
 
         my_player.addEventListener('enterframe', function() {
 
             // and ground line also
             if (this.within(bear2, 5)) {
-                label.text = 'hit';
+                bear.hp -= 10;
+                label.text = 'HIT';
             }
 
             if (!game.input.left && !game.input.right) {
@@ -236,11 +264,12 @@ var my_player = bear;
             jQuery.ajax({
                 url: 'http://localhost:8888/push', type: 'GET',
                 data: {
+                    player: '1', // 1 ~ 4
                     x: this.x,
                     y: this.y,
                     hp: this.hp,
                     status: this.status,
-                    player: '1', // 1 ~ 4
+                    jumping: this.jumping,
                 },
                 dataType: 'json',
                 beforeSend: function(xhr, settings) {
@@ -250,13 +279,6 @@ var my_player = bear;
             });
         });
 
-        var createLife = function (life) {
-            var bars = "";
-            for (var i=0;i<10;i+=1) {
-                bars += "|";
-            }
-        }
-
         var readdChild = function (object) {
             game.rootScene.removeChild(object);
             game.rootScene.addChild(object);
@@ -264,7 +286,11 @@ var my_player = bear;
 
         game.addEventListener('enterframe', function() {
 
-                /*
+            life1_label.text = createLife(bear.hp);
+            life2_label.text = createLife(bear2.hp);
+            life3_label.text = createLife(bear3.hp);
+            life4_label.text = createLife(bear4.hp);
+            /*
             console.log("bear.y:" + bear.y);
             console.log("bear2.y:" + bear2.y);
             console.log("bear3.y:" + bear3.y);
