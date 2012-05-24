@@ -29,6 +29,21 @@ window.onload = function() {
         return bars;
     }
 
+    // logged in
+    /*
+    jQuery.ajax({
+        url: 'http://localhost:8888/push', type: 'GET',
+        data: {
+            player: '1', // 1 ~ 4
+        },
+        dataType: 'json',
+        beforeSend: function(xhr, settings) {
+        },
+        success: function(data, status, xhr) {
+        }
+    });
+    */
+ 
     game.onload = function() {
         game.keybind(90, 'a'); //z
         game.keybind(88, 'b'); //x
@@ -51,6 +66,7 @@ window.onload = function() {
         bear.current_y = 0;
         bear.frame = 0;
         bear.status = 'idle';
+        bear.scaleX = 1;
         bear.x = 80;
         bear.y = 130;
         bear.vy = 0;
@@ -61,10 +77,12 @@ window.onload = function() {
         //Math.floor(Math.random() * 300) + 10;
 
         var bear2 = new Sprite(32, 32);
+        bear2.name = 'bar';
         bear2.n = 0;
         bear2.current_y = 0;
         bear2.frame = 5;
         bear2.status = 'idle';
+        bear2.scaleX = 1;
         bear2.x = 60;
         bear2.y = 100;
         bear2.vy = 100;
@@ -74,6 +92,7 @@ window.onload = function() {
         bear2.image = game.assets['chara1.png'];
 
         var bear3 = new Sprite(32, 32);
+        bear3.name = 'fuga';
         bear3.n = 0;
         bear3.current_y = 0;
         bear3.frame = 10;
@@ -88,6 +107,7 @@ window.onload = function() {
         bear3.image = game.assets['chara1.png'];
 
         var bear4 = new Sprite(32, 32);
+        bear4.name = 'hoo';
         bear4.n = 0;
         bear4.current_y = 0;
         bear4.frame = 15;
@@ -104,13 +124,11 @@ window.onload = function() {
         time_label.color = 'white';
         time_label.font = "bold 20px 'Impact'";
 
-//        var life1_label = new Label('|||||||');
         var life1_label = new Label(createLife(bear.hp));
         life1_label.x = 7;
         life1_label.y = 235;
         life1_label.color = 'white';
 
-//        var life2_label = new Label('|||||||');
         var life2_label = new Label(createLife(bear2.hp))
         life2_label.x = 100;
         life2_label.y = 235;
@@ -121,7 +139,6 @@ window.onload = function() {
         life3_label.y = 235;
         life3_label.color = 'white';
 
-        //var life4_label = new Label('|||||||');
         var life4_label = new Label(createLife(bear4.hp))
         life4_label.x = 285;
         life4_label.y = 235;
@@ -131,65 +148,65 @@ window.onload = function() {
         score_label.x = 200;
         score_label.y = 5;
 
-        var player1_label = new Label("hoge");
-        player1_label.x = 15;
-        player1_label.y = 220;
+        var player1_label = new Label(bear.name);
+        player1_label.x = 19;
+        player1_label.y = 207;
         player1_label.color = 'white';
 
-        var player2_label = new Label("bar");
+        var player2_label = new Label(bear2.name);
         player2_label.x = 100;
-        player2_label.y = 220;
+        player2_label.y = 207;
         player2_label.color = 'white';
         
-        var player3_label = new Label("fuga");
-        player3_label.x = 195;
-        player3_label.y = 220;
+        var player3_label = new Label(bear3.name);
+        player3_label.x = 183;
+        player3_label.y = 207;
         player3_label.color = 'white';
 
-        var player4_label = new Label("boo");
-        player4_label.x = 285;
-        player4_label.y = 220;
+        var player4_label = new Label(bear4.name);
+        player4_label.x = 260;
+        player4_label.y = 207;
         player4_label.color = 'white';
 
         // player logged in
         ws.onmessage = function(event) {
-            label.text = 'HIT';
+            label.text = $.parseJSON(event.data)['player'];
         }
 
         // CPU ----
         var cpu_player2 = bear2;
         cpu_player2.addEventListener('enterframe', function() {
             ws.onmessage = function(event) {
-                cpu_player2.scaleX = $.parseJSON(event.data)['bear2']['scaleX'];
-                cpu_player2.status = $.parseJSON(event.data)['bear2']['status'];
-                cpu_player2.x = $.parseJSON(event.data)['bear2']['x'];
-                cpu_player2.y = $.parseJSON(event.data)['bear2']['y'];
+                var data = $.parseJSON(event.data)['bear2'];
+                cpu_player2.x = data['x'];
+                cpu_player2.y = data['y'];
+//                cpu_player2.y = data['scaleX'];
+//                cpu_player2.y = data['status'];
             }
         });
 
         var cpu_player3 = bear3;
         cpu_player3.addEventListener('enterframe', function() {
             ws.onmessage = function(event) {
-                cpu_player3.scaleX = $.parseJSON(event.data)['bear3']['scaleX'];
-                cpu_player3.status = $.parseJSON(event.data)['bear3']['status'];
-                cpu_player3.x = $.parseJSON(event.data)['bear3']['x'];
-                cpu_player3.y = $.parseJSON(event.data)['bear3']['y'];
+//                cpu_player3.scaleX = $.parseJSON(event.data)['bear3']['scaleX'];
+//                cpu_player3.status = $.parseJSON(event.data)['bear3']['status'];
+//                cpu_player3.x = $.parseJSON(event.data)['bear3']['x'];
+//                cpu_player3.y = $.parseJSON(event.data)['bear3']['y'];
             }
         });
 
         var cpu_player4 = bear4;
         cpu_player4.addEventListener('enterframe', function() {
             ws.onmessage = function(event) {
-                cpu_player4.scaleX = $.parseJSON(event.data)['bear4']['scaleX'];
-                cpu_player4.status = $.parseJSON(event.data)['bear4']['status'];
-                cpu_player4.x = $.parseJSON(event.data)['bear4']['x'];
-                cpu_player4.y = $.parseJSON(event.data)['bear4']['y'];
+//                cpu_player4.scaleX = $.parseJSON(event.data)['bear4']['scaleX'];
+//                cpu_player4.status = $.parseJSON(event.data)['bear4']['status'];
+//                cpu_player4.x = $.parseJSON(event.data)['bear4']['x'];
+//                cpu_player4.y = $.parseJSON(event.data)['bear4']['y'];
             }
         });
 
         // PLAYER
         var my_player = bear;
-
         my_player.addEventListener('enterframe', function() {
 
             // and ground line also
@@ -264,11 +281,12 @@ window.onload = function() {
             jQuery.ajax({
                 url: 'http://localhost:8888/push', type: 'GET',
                 data: {
-                    player: '1', // 1 ~ 4
+                    player: '2', // 1 ~ 4
                     x: this.x,
                     y: this.y,
                     hp: this.hp,
                     status: this.status,
+                    scaleX: this.scaleX,
                     jumping: this.jumping,
                 },
                 dataType: 'json',

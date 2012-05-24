@@ -26,12 +26,17 @@ class Announcer(tornado.web.RequestHandler):
     def get(self, *args, **kwargs):
         x = self.get_argument('x')
         y = self.get_argument('y')
+        status = self.get_argument('status')
+        scale_x = self.get_argument('scaleX')
+
         player = self.get_argument('player')
+
         for socket in GLOBALS['sockets']:
             #bear1, bear2, bear3, bear4
+            #socket.write_message('{"bear%s":{"x":"%s", "y":"%s", "scaleX":"%s", "status":"%s"}}' %
+            #        (str(player), str(x), str(y), str(status), str(scale_x)))
             socket.write_message('{"bear%s":{"x":"%s", "y":"%s"}}' % (str(player), str(x), str(y)))
-            socket.write_message('{"player":"%s"}' % (str(player)))
-            #socket.write_message('{"bear":{"x":"%s", "y":"%s"}}' % (str(x), str(y)))
+#            socket.write_message('{"player":"%s"}' % (str(player)))
         self.write('Posted')
 
 application = tornado.web.Application([
