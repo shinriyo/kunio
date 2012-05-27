@@ -30,11 +30,10 @@ window.onload = function() {
     }
 
     // logged in
-    /*
     jQuery.ajax({
-        url: 'http://localhost:8888/push', type: 'GET',
+        url: 'http://localhost:8888/loggedin', type: 'GET',
         data: {
-            player: '1', // 1 ~ 4
+            logged_player: '1', // 1 ~ 4
         },
         dataType: 'json',
         beforeSend: function(xhr, settings) {
@@ -42,7 +41,6 @@ window.onload = function() {
         success: function(data, status, xhr) {
         }
     });
-    */
  
     game.onload = function() {
         game.keybind(90, 'a'); //z
@@ -125,23 +123,23 @@ window.onload = function() {
         time_label.font = "bold 20px 'Impact'";
 
         var life1_label = new Label(createLife(bear.hp));
-        life1_label.x = 7;
-        life1_label.y = 235;
+        life1_label.x = 20;
+        life1_label.y = 219;
         life1_label.color = 'white';
 
         var life2_label = new Label(createLife(bear2.hp))
         life2_label.x = 100;
-        life2_label.y = 235;
+        life2_label.y = 219;
         life2_label.color = 'white';
 
         var life3_label = new Label(createLife(bear3.hp))
-        life3_label.x = 195;
-        life3_label.y = 235;
+        life3_label.x = 179;
+        life3_label.y = 219;
         life3_label.color = 'white';
 
         var life4_label = new Label(createLife(bear4.hp))
-        life4_label.x = 285;
-        life4_label.y = 235;
+        life4_label.x = 255;
+        life4_label.y = 219;
         life4_label.color = 'white';
 
         var score_label = new Label('Score: 0');
@@ -170,17 +168,18 @@ window.onload = function() {
 
         // player logged in
         ws.onmessage = function(event) {
-            label.text = $.parseJSON(event.data)['player'];
+            label.text = $.parseJSON(event.data)['logged_player'];
         }
 
         // CPU ----
+        // from "game.py"
         var cpu_player2 = bear2;
         cpu_player2.addEventListener('enterframe', function() {
             ws.onmessage = function(event) {
                 var data = $.parseJSON(event.data)['bear2'];
                 cpu_player2.x = data['x'];
                 cpu_player2.y = data['y'];
-//                cpu_player2.y = data['scaleX'];
+                cpu_player2.scaleX = data['scaleX'];
 //                cpu_player2.y = data['status'];
             }
         });

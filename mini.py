@@ -24,25 +24,29 @@ class ClientSocket(websocket.WebSocketHandler):
 
 class Announcer(tornado.web.RequestHandler):
     def get(self, *args, **kwargs):
+        player = self.get_argument('player')
         x = self.get_argument('x')
         y = self.get_argument('y')
         status = self.get_argument('status')
-        scale_x = self.get_argument('scaleX')
-
-        player = self.get_argument('player')
+        scaleX = self.get_argument('scaleX')
 
         for socket in GLOBALS['sockets']:
             #bear1, bear2, bear3, bear4
-            #socket.write_message('{"bear%s":{"x":"%s", "y":"%s", "scaleX":"%s", "status":"%s"}}' %
-            #        (str(player), str(x), str(y), str(status), str(scale_x)))
-            socket.write_message('{"bear%s":{"x":"%s", "y":"%s"}}' % (str(player), str(x), str(y)))
-#            socket.write_message('{"player":"%s"}' % (str(player)))
+            socket.write_message('{"bear%s":{"x":"%s", "y":"%s", "status":"%s", "scaleX":"%s"}}'
+                    % (str(player), str(x), str(y), str(status), str(scaleX)))
+        self.write('Posted')
+
+class Loggedin(tornado.web.RequestHandler):
+    def get(self, *args, **kwargs):
+        logged_player = self.get_argument('logged_player')
+        socket.write_message('{"logged_player":"%s"}' % (str(logged_player)))
         self.write('Posted')
 
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/socket", ClientSocket),
     (r"/push", Announcer),
+    (r"/loggedin", Loggedin),
 ])
 
 if __name__ == "__main__":
