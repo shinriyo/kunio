@@ -12,15 +12,21 @@ window.onload = function() {
     var player_select_scene = new Scene();
     player_select_scene.backgroundColor = 'black';
 
+    // websocket
+    var ws = new WebSocket("ws://localhost:8888/socket");
+
     var label = new Label('message');
     label.x = 105;
     label.y = 0;
     label.color = 'red';
     label.font = "bold 24px 'Impact'";
+    label.addEventListener('enterframe', function() {
+        ws.onmessage = function(event) {
+            var data = $.parseJSON(event.data);
+            label.text = data['login'];
+        }
+    });
 
-    // websocket
-    var ws = new WebSocket("ws://localhost:8888/socket");
- 
     var createLife = function (life) {
         var bars = "";
         for (var i=0;i<life/10;i+=1) {
@@ -31,9 +37,9 @@ window.onload = function() {
 
     // logged in
     jQuery.ajax({
-        url: 'http://localhost:8888/loggedin', type: 'GET',
+        url: 'http://localhost:8888/login', type: 'GET',
         data: {
-            logged_player: '1', // 1 ~ 4
+            login: '1', // 1 ~ 4
         },
         dataType: 'json',
         beforeSend: function(xhr, settings) {
@@ -168,7 +174,7 @@ window.onload = function() {
 
         // player logged in
         ws.onmessage = function(event) {
-            label.text = $.parseJSON(event.data)['logged_player'];
+            label.text = $.parseJSON(event.data)['login'];
         }
 
         // CPU ----
@@ -180,7 +186,8 @@ window.onload = function() {
                 cpu_player2.x = data['x'];
                 cpu_player2.y = data['y'];
                 cpu_player2.scaleX = data['scaleX'];
-//                cpu_player2.y = data['status'];
+                cpu_player2.status = data['status'];
+                cpu_player2.frame = data['frame'];
             }
         });
 
@@ -211,7 +218,7 @@ window.onload = function() {
             // and ground line also
             if (this.within(bear2, 5)) {
                 bear.hp -= 10;
-                label.text = 'HIT';
+//                label.text = 'HIT';
             }
 
             if (!game.input.left && !game.input.right) {
@@ -287,6 +294,7 @@ window.onload = function() {
                     status: this.status,
                     scaleX: this.scaleX,
                     jumping: this.jumping,
+                    frame: this.frame, // n is not needed
                 },
                 dataType: 'json',
                 beforeSend: function(xhr, settings) {
