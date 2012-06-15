@@ -15,9 +15,6 @@ class ClientSocket(websocket.WebSocketHandler):
         GLOBALS['sockets'].append(self)
         print "Websocket opened"
 
-#    def on_message(self, ):
-#        self.write_message("You said: " + message)
-
     def on_close(self):
         print "Websocket closed"
         GLOBALS['sockets'].remove(self)
@@ -39,10 +36,14 @@ class Announcer(tornado.web.RequestHandler):
         self.write('Posted')
 
 class Login(tornado.web.RequestHandler):
+    num = 0
     def get(self, *args, **kwargs):
         login = self.get_argument('login')
+        if login == 'OK':
+            self.num += 1
         for socket in GLOBALS['sockets']:
-            socket.write_message('{"login":"%s"}' % (str(login)))
+            #socket.write_message('{"login":"%s"}' % (str(login)))
+            socket.write_message('{"login":"%s"}' % (str(self.num)))
         self.write('Login')
 
 application = tornado.web.Application([

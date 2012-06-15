@@ -39,7 +39,8 @@ window.onload = function() {
     jQuery.ajax({
         url: 'http://localhost:8888/login', type: 'GET',
         data: {
-            login: '1', // 1 ~ 4
+            //login: '1', // 1 ~ 4
+            login: 'OK',
         },
         dataType: 'json',
         beforeSend: function(xhr, settings) {
