@@ -22,8 +22,8 @@ window.onload = function() {
     label.font = "bold 24px 'Impact'";
     label.addEventListener('enterframe', function() {
         ws.onmessage = function(event) {
-            var data = $.parseJSON(event.data);
-            label.text = data['login'];
+            var data = $.parseJSON(event.data)['login'];
+            label.text = data;
         }
     });
 
@@ -172,16 +172,13 @@ window.onload = function() {
         player4_label.y = 207;
         player4_label.color = 'white';
 
-        // player logged in
-        ws.onmessage = function(event) {
-            label.text = $.parseJSON(event.data)['login'];
-        }
-
         // CPU ----
         // from "game.py"
         var cpu_player2 = bear2;
         cpu_player2.addEventListener('enterframe', function() {
             ws.onmessage = function(event) {
+                var sss = $.parseJSON(event.data)['sss'];
+                label.text = sss;
                 var data = $.parseJSON(event.data)['bear2'];
                 cpu_player2.x = data['x'];
                 cpu_player2.y = data['y'];

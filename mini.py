@@ -14,6 +14,7 @@ class ClientSocket(websocket.WebSocketHandler):
     def open(self):
         GLOBALS['sockets'].append(self)
         print "Websocket opened"
+#        print "PERSONS:" + len(GLOBALS['sockets'])
 
     def on_close(self):
         print "Websocket closed"
@@ -21,7 +22,7 @@ class ClientSocket(websocket.WebSocketHandler):
 
 class Announcer(tornado.web.RequestHandler):
     def get(self, *args, **kwargs):
-        player = self.get_argument('player')
+        player_no = self.get_argument('player')
         x = self.get_argument('x')
         y = self.get_argument('y')
         status = self.get_argument('status')
@@ -32,19 +33,22 @@ class Announcer(tornado.web.RequestHandler):
             #bear1, bear2, bear3, bear4
             socket.write_message(
                 '{"bear%s":{"x":"%s", "y":"%s", "status":"%s", "scaleX":"%s", "frame":"%s"}}'
-                % (str(player), str(x), str(y), str(status), str(scaleX), str(frame)))
+                % (str(player_no), str(x), str(y), str(status), str(scaleX), str(frame)))
         self.write('Posted')
 
 class Login(tornado.web.RequestHandler):
     num = 0
     def get(self, *args, **kwargs):
         login = self.get_argument('login')
-        if login == 'OK':
-            self.num += 1
+#        if login == 'OK':
+#            self.num += 1
         for socket in GLOBALS['sockets']:
-            #socket.write_message('{"login":"%s"}' % (str(login)))
+            #socket.write_message('{"login":"aiueo"}')
             socket.write_message('{"login":"%s"}' % (str(self.num)))
+            socket.write_message('{"sss":"%s"}' % (str(self.num)))
         self.write('Login')
+        print "login"
+        print str(len(GLOBALS['sockets']) + 1) + "persons"
 
 application = tornado.web.Application([
     (r"/", MainHandler),
