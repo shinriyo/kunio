@@ -1,0 +1,13 @@
+kunioくんマルチプレイ
+====
+
+使っている技術
+---
+Python
+Tornado
+enchant.js
+
+今後の課題
+---
+Tornadoで部屋　
+js=>CoffeeScript
